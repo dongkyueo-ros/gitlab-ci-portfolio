@@ -1,7 +1,7 @@
 # on-premise - gitlab ci/cd
 
-![Image](https://github.com/user-attachments/assets/63f421ca-bfcf-4062-be40-346908443391)
+![Image](https://github.com/user-attachments/assets/3e458d1b-bf37-4048-807e-afaf0ae8639e)
 
 # aws - gitlab ci/cd
 
-![Image](https://github.com/user-attachments/assets/aa05b91c-17fa-4a9c-a7fc-8a944d24e483)
+![Image](https://github.com/user-attachments/assets/6ee80594-4ebd-4a9b-b872-9205d373e24b)
