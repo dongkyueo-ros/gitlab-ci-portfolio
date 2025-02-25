@@ -5,10 +5,10 @@ services:
     image: gitlab/gitlab-ee:latest
     container_name: gitlab
     restart: always
-    hostname: 'gitlab.maum.ai'
+    hostname: '<hostname>'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'https://gitlab.maum.ai'
+        external_url '<external_url>'
         # Point GitLab's Nginx to your wildcard certificate
         nginx['ssl_certificate'] = "/etc/gitlab/ssl/<ssl_certificate.crt>"
         nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/<ssl_certificate.key>"
@@ -29,7 +29,7 @@ services:
         # Reply-by-email / incoming email
         gitlab_rails['incoming_email_enabled'] = true
         gitlab_rails['incoming_email_address'] = "reply+%{key}@maum.ai"
-        gitlab_rails['incoming_email_email'] = "reply@maum.ai"
+        gitlab_rails['incoming_email_email'] = "reply@<domain>"
         gitlab_rails['incoming_email_password'] = "<password>"
         gitlab_rails['incoming_email_host'] = "imap.gmail.com"
         gitlab_rails['incoming_email_port'] = 993
@@ -39,12 +39,12 @@ services:
         gitlab_rails['incoming_email_idle_timeout'] = 60
 
         # Container registry
-        registry_external_url 'https://docker-pri.maum.ai:443'
+        registry_external_url '<registry_external_url>'
         registry['enable'] = true
 
         # Backups (example: S3)
         gitlab_rails['backup_upload'] = true
-        gitlab_rails['backup_upload_remote_directory'] = 'gitlab-maumai'
+        gitlab_rails['backup_upload_remote_directory'] = '<remote_bucket_name>'
         gitlab_rails['backup_upload_connection'] = {
           'provider' => 'AWS',
           'region' => 'ap-northeast-2',
