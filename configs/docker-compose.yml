@@ -1,0 +1,89 @@
+
+version: '3.6'
+services:
+  gitlab:
+    image: gitlab/gitlab-ee:latest
+    container_name: gitlab
+    restart: always
+    hostname: 'gitlab.maum.ai'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.maum.ai'
+        # Point GitLab's Nginx to your wildcard certificate
+        nginx['ssl_certificate'] = "/etc/gitlab/ssl/<ssl_certificate.crt>"
+        nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/<ssl_certificate.key>"
+
+        # SMTP configuration (example: Gmail)
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = 'smtp.gmail.com'
+        gitlab_rails['smtp_port'] = 587
+        gitlab_rails['smtp_user_name'] = '<e-mail>'
+        gitlab_rails['smtp_password'] = 'uvsm pjts xuzu aryt'
+        gitlab_rails['smtp_domain'] = '<domain>'
+        gitlab_rails['smtp_authentication'] = "login"
+        gitlab_rails['smtp_tls'] = false
+        gitlab_rails['smtp_enable_starttls_auto'] = true
+        gitlab_rails['gitlab_email_from'] = "<e-mail>"
+        gitlab_rails['gitlab_email_reply_to'] = "<e-mail>"
+
+        # Reply-by-email / incoming email
+        gitlab_rails['incoming_email_enabled'] = true
+        gitlab_rails['incoming_email_address'] = "reply+%{key}@maum.ai"
+        gitlab_rails['incoming_email_email'] = "reply@maum.ai"
+        gitlab_rails['incoming_email_password'] = "<password>"
+        gitlab_rails['incoming_email_host'] = "imap.gmail.com"
+        gitlab_rails['incoming_email_port'] = 993
+        gitlab_rails['incoming_email_ssl'] = true
+        gitlab_rails['incoming_email_start_tls'] = false
+        gitlab_rails['incoming_email_mailbox_name'] = "inbox"
+        gitlab_rails['incoming_email_idle_timeout'] = 60
+
+        # Container registry
+        registry_external_url 'https://docker-pri.maum.ai:443'
+        registry['enable'] = true
+
+        # Backups (example: S3)
+        gitlab_rails['backup_upload'] = true
+        gitlab_rails['backup_upload_remote_directory'] = 'gitlab-maumai'
+        gitlab_rails['backup_upload_connection'] = {
+          'provider' => 'AWS',
+          'region' => 'ap-northeast-2',
+          'aws_access_key_id' => '<aws_access_key_id>',
+          'aws_secret_access_key' => '<aws_secret_access_key>'
+        }
+
+        # SSH on a custom port
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+
+        # Domain allowlist / signup
+        gitlab_rails['domain_allowlist'] = ['<domain_allowlist>']
+        gitlab_rails['domain_denylist_enabled'] = false
+        gitlab_rails['gitlab_signup_enabled'] = true
+        gitlab_rails['logging_level'] = "warn"
+
+        # Logrotate
+        logging['logrotate_frequency'] = "daily"
+        logging['logrotate_size'] = "1GB"
+        logging['logrotate_rotate'] = 7
+        logging['logrotate_compress'] = "xz"
+
+    ports:
+      - "80:80"
+      - "443:443"
+      - "2222:22"
+    volumes:
+      - /srv/gitlab/config:/etc/gitlab
+      - /srv/gitlab/logs:/var/log/gitlab
+      - /srv/gitlab/data:/var/opt/gitlab
+      - /srv/gitlab/ssl:/etc/gitlab/ssl
+    shm_size: 1g
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: gitlab-runner
+    restart: always
+    volumes:
+      - /srv/gitlab-runner/config:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - RUNNER_NAME=gitlab-runner
